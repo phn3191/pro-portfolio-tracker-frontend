@@ -1,0 +1,108 @@
+basePath: /
+definitions:
+  main.Achievement:
+    properties:
+      description:
+        type: string
+      id:
+        type: integer
+      impact:
+        type: string
+      skill_used:
+        type: string
+    type: object
+  main.Trophy:
+    properties:
+      id:
+        type: integer
+      name:
+        type: string
+    type: object
+host: localhost:8080
+info:
+  contact: {}
+  description: API for tracking professional achievements and trophies.
+  title: Professional Portfolio Tracker API
+  version: "1.0"
+paths:
+  /achievements:
+    get:
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/main.Achievement'
+            type: array
+      summary: Get list of achievements
+      tags:
+      - achievements
+    post:
+      consumes:
+      - application/json
+      parameters:
+      - description: Achievement to create
+        in: body
+        name: achievement
+        required: true
+        schema:
+          $ref: '#/definitions/main.Achievement'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/main.Achievement'
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Create new achievement
+      tags:
+      - achievements
+  /trophies:
+    get:
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/main.Trophy'
+            type: array
+      summary: Get list of trophies
+      tags:
+      - trophies
+    post:
+      consumes:
+      - application/json
+      parameters:
+      - description: Trophy to create
+        in: body
+        name: trophy
+        required: true
+        schema:
+          $ref: '#/definitions/main.Trophy'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/main.Trophy'
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Create new trophy
+      tags:
+      - trophies
+swagger: "2.0"
