@@ -1,38 +1,28 @@
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 import 'package:file_picker/file_picker.dart';
-import '../models/achievement.dart';
-import '../services/achievement_service.dart';
-import 'dart:io';
 
 class AddAchievementScreen extends StatefulWidget {
-  const AddAchievementScreen({super.key});
-
   @override
-  State<AddAchievementScreen> createState() => _AddAchievementScreenState();
+  _AddAchievementScreenState createState() => _AddAchievementScreenState();
 }
 
 class _AddAchievementScreenState extends State<AddAchievementScreen> {
-  final _formKey = GlobalKey<FormState>();
   final _descriptionController = TextEditingController();
   final _impactController = TextEditingController();
-  String? _selectedSkill;
-  DateTime? _selectedDate;
-  File? _selectedFile;
+  final _skillController = TextEditingController();
+  final List<String> _skillTags = [];
 
-  final AchievementService _service = AchievementService();
-  bool _isSubmitting = false;
+  DateTime _selectedDate = DateTime.now();
+  String? _pickedFileName;
 
-  List<String> skillOptions = ['Go', 'Flutter', 'SQL', 'Python', 'JavaScript'];
-
-  Future<void> _pickDate() async {
-    final now = DateTime.now();
-    final picked = await showDatePicker(
+  void _pickDate() async {
+    final DateTime? picked = await showDatePicker(
       context: context,
-      initialDate: now,
-      firstDate: DateTime(now.year - 5),
-      lastDate: now,
+      initialDate: _selectedDate,
+      firstDate: DateTime(2000),
+      lastDate: DateTime.now(),
     );
-
     if (picked != null) {
       setState(() {
         _selectedDate = picked;
@@ -40,133 +30,144 @@ class _AddAchievementScreenState extends State<AddAchievementScreen> {
     }
   }
 
-  Future<void> _pickFile() async {
-    final result = await FilePicker.platform.pickFiles();
-    if (result != null && result.files.single.path != null) {
-      setState(() {
-        _selectedFile = File(result.files.single.path!);
-      });
-    }
-  }
-
-  void _submit() async {
-    if (!_formKey.currentState!.validate() || _selectedSkill == null || _selectedDate == null) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Vui lòng điền đầy đủ thông tin')),
-      );
-      return;
-    }
-
-    setState(() => _isSubmitting = true);
-
-    final achievement = Achievement(
-      id: 0,
-      description: _descriptionController.text,
-      impact: _impactController.text,
-      skillUsed: _selectedSkill!,
+  void _pickAttachment() async {
+    showModalBottomSheet(
+      context: context,
+      builder: (_) => Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          ListTile(
+            leading: Icon(Icons.image),
+            title: Text('Pick image'),
+            onTap: () async {
+              final result = await FilePicker.platform.pickFiles(type: FileType.image);
+              if (result != null) {
+                setState(() => _pickedFileName = result.files.single.name);
+              }
+              Navigator.pop(context);
+            },
+          ),
+          ListTile(
+            leading: Icon(Icons.insert_drive_file),
+            title: Text('Pick file'),
+            onTap: () async {
+              final result = await FilePicker.platform.pickFiles();
+              if (result != null) {
+                setState(() => _pickedFileName = result.files.single.name);
+              }
+              Navigator.pop(context);
+            },
+          ),
+        ],
+      ),
     );
-
-    try {
-      await _service.addAchievement(achievement);
-
-      // TODO: Upload file logic nếu backend hỗ trợ
-
-      if (context.mounted) {
-        Navigator.pop(context, true);
-      }
-    } catch (e) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Lỗi khi lưu: $e')),
-      );
-    } finally {
-      setState(() => _isSubmitting = false);
-    }
-  }
-
-  @override
-  void dispose() {
-    _descriptionController.dispose();
-    _impactController.dispose();
-    super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('Add Achievement')),
-      body: Form(
-        key: _formKey,
+      appBar: AppBar(
+        title: null, // Không có tiêu đề
+        automaticallyImplyLeading: true,
+        elevation: 0,
+      ),
+      body: Padding(
+        padding: const EdgeInsets.all(16.0),
         child: ListView(
-          padding: const EdgeInsets.all(16),
           children: [
-            TextFormField(
+            // Description
+            TextField(
               controller: _descriptionController,
-              decoration: const InputDecoration(
+              decoration: InputDecoration(
                 labelText: 'Description',
                 prefixIcon: Icon(Icons.description),
               ),
-              validator: (value) =>
-                  value == null || value.isEmpty ? 'Please enter description' : null,
             ),
-            const SizedBox(height: 16),
-            TextFormField(
+
+            // Impact
+            SizedBox(height: 12),
+            TextField(
               controller: _impactController,
-              decoration: const InputDecoration(
+              decoration: InputDecoration(
                 labelText: 'Impact',
-                prefixIcon: Icon(Icons.bolt),
+                prefixIcon: Icon(Icons.flash_on),
               ),
-              validator: (value) =>
-                  value == null || value.isEmpty ? 'Please enter impact' : null,
             ),
-            const SizedBox(height: 16),
-            DropdownButtonFormField<String>(
-              decoration: const InputDecoration(
+
+            // Skill Tags
+            SizedBox(height: 12),
+            TextField(
+              controller: _skillController,
+              decoration: InputDecoration(
                 labelText: 'Skill Used',
                 prefixIcon: Icon(Icons.code),
               ),
-              value: _selectedSkill,
-              items: skillOptions.map((skill) {
-                return DropdownMenuItem<String>(
-                  value: skill,
-                  child: Text(skill),
-                );
-              }).toList(),
               onChanged: (value) {
-                setState(() {
-                  _selectedSkill = value;
-                });
+                if (value.endsWith(',')) {
+                  final tag = value.replaceAll(',', '').trim();
+                  if (tag.isNotEmpty && !_skillTags.contains(tag)) {
+                    setState(() {
+                      _skillTags.add(tag);
+                      _skillController.clear();
+                    });
+                  }
+                }
               },
-              validator: (value) =>
-                  value == null ? 'Please select a skill' : null,
             ),
-            const SizedBox(height: 16),
-            ListTile(
-              title: Text(
-                _selectedDate != null
-                    ? 'Date: ${_selectedDate!.toLocal().toString().split(' ')[0]}'
-                    : 'Choose achievement date',
-              ),
-              trailing: const Icon(Icons.calendar_today),
-              onTap: _pickDate,
+            Wrap(
+              spacing: 8,
+              children: _skillTags
+                  .map((tag) => Chip(
+                        label: Text(tag),
+                        onDeleted: () => setState(() => _skillTags.remove(tag)),
+                      ))
+                  .toList(),
             ),
-            const SizedBox(height: 16),
-            ListTile(
-              title: Text(
-                _selectedFile != null
-                    ? 'Attached: ${_selectedFile!.path.split('/').last}'
-                    : 'Attach file (optional)',
-              ),
-              trailing: const Icon(Icons.attach_file),
-              onTap: _pickFile,
+
+            // Date Picker
+            SizedBox(height: 20),
+            Row(
+              children: [
+                Expanded(
+                  child: Text(
+                    'Achievement Date: ${DateFormat.yMMMd().format(_selectedDate)}',
+                  ),
+                ),
+                IconButton(
+                  icon: Icon(Icons.calendar_today),
+                  onPressed: _pickDate,
+                ),
+              ],
             ),
-            const SizedBox(height: 24),
+
+            // File Attachment
+            SizedBox(height: 20),
+            Row(
+              children: [
+                Expanded(
+                  child: Text(
+                    _pickedFileName != null ? 'File: $_pickedFileName' : 'Attach file (optional)',
+                  ),
+                ),
+                IconButton(
+                  icon: Icon(Icons.attach_file),
+                  onPressed: _pickAttachment,
+                ),
+              ],
+            ),
+
+            // Save Button
+            SizedBox(height: 30),
             ElevatedButton.icon(
-              icon: _isSubmitting
-                  ? const CircularProgressIndicator()
-                  : const Icon(Icons.save),
-              label: const Text('Save Achievement'),
-              onPressed: _isSubmitting ? null : _submit,
-            ),
+              onPressed: () {
+                // Save logic
+              },
+              icon: Icon(Icons.save),
+              label: Text('Save Achievement'),
+              style: ElevatedButton.styleFrom(
+                minimumSize: Size(double.infinity, 50),
+              ),
+            )
           ],
         ),
       ),

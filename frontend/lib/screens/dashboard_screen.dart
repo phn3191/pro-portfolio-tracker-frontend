@@ -71,7 +71,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
         onPressed: () async {
           final added = await Navigator.push(
             context,
-            MaterialPageRoute(builder: (_) => const AddAchievementScreen()),
+            MaterialPageRoute(builder: (_) => AddAchievementScreen()),
           );
           if (added == true) {
             setState(() {
