@@ -4,14 +4,16 @@ import (
 	"net/http"
 	"sync"
 
+	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
 )
 
 type Achievement struct {
-	ID          int    `json:"id"`
-	Description string `json:"description"`
-	Impact      string `json:"impact"`
-	SkillUsed   string `json:"skill_used"`
+	ID          int      `json:"id"`
+	Description string   `json:"description"`
+	Impact      string   `json:"impact"`
+	SkillUsed   []string `json:"skill_used"`
+	Date        string   `json:"date"`
 }
 
 type Trophy struct {
@@ -21,8 +23,8 @@ type Trophy struct {
 
 var (
 	achievements = []Achievement{
-		{ID: 1, Description: "Built a scalable REST API", Impact: "Improved system reliability", SkillUsed: "Go"},
-		{ID: 2, Description: "Migrated database to PostgreSQL", Impact: "Enhanced data integrity", SkillUsed: "SQL"},
+		{ID: 1, Description: "Built a scalable REST API", Impact: "Improved system reliability", SkillUsed: []string{"Go", "Gin", "PostgreSQL"}, Date: "2024-01-01"},
+		{ID: 2, Description: "Migrated database to PostgreSQL", Impact: "Enhanced data integrity", SkillUsed: []string{"SQL", "PostgreSQL"}, Date: "2024-01-02"},
 	}
 	trophies = []Trophy{
 		{ID: 1, Name: "API Master"},
@@ -76,6 +78,8 @@ func createTrophy(c *gin.Context) {
 
 func main() {
 	r := gin.Default()
+
+	r.Use(cors.Default())
 
 	r.GET("/achievements", getAchievements)
 	r.POST("/achievements", createAchievement)
