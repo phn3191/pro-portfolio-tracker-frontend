@@ -1,23 +1,75 @@
 import 'package:flutter/material.dart';
-import 'screens/dashboard_screen.dart';
+import 'screens/achievements_screen.dart';
+import 'screens/trophies_screen.dart';
+import 'screens/more_screen.dart';
 
 void main() {
-  runApp(const AchievementApp());
+  runApp(const MyApp());
 }
 
-class AchievementApp extends StatelessWidget {
-  const AchievementApp({super.key});
+class MyApp extends StatelessWidget {
+  const MyApp({super.key});
 
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
       title: 'Achievement Tracker',
-      debugShowCheckedModeBanner: false,
       theme: ThemeData(
-        primarySwatch: Colors.indigo,
+        scaffoldBackgroundColor: const Color(0xFFF4F1FD), // tím nhạt
         useMaterial3: true,
       ),
-      home: const DashboardScreen(),
+      home: const MainNavigation(),
+    );
+  }
+}
+
+class MainNavigation extends StatefulWidget {
+  const MainNavigation({super.key});
+
+  @override
+  State<MainNavigation> createState() => _MainNavigationState();
+}
+
+class _MainNavigationState extends State<MainNavigation> {
+  int _selectedIndex = 0;
+
+  final List<Widget> _screens = const [
+    AchievementsScreen(),
+    TrophiesScreen(),
+    MoreScreen(),
+  ];
+
+  void _onItemTapped(int index) {
+    setState(() {
+      _selectedIndex = index;
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      body: _screens[_selectedIndex],
+      bottomNavigationBar: BottomNavigationBar(
+        backgroundColor: Colors.white,
+        currentIndex: _selectedIndex,
+        onTap: _onItemTapped,
+        selectedItemColor: Colors.black,
+        unselectedItemColor: Colors.grey,
+        items: const [
+          BottomNavigationBarItem(
+            icon: Icon(Icons.emoji_events_outlined),
+            label: 'Achievements',
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.military_tech_outlined),
+            label: 'Trophies',
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.more_horiz),
+            label: 'More',
+          ),
+        ],
+      ),
     );
   }
 }

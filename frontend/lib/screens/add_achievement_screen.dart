@@ -3,6 +3,8 @@ import 'package:intl/intl.dart';
 import 'package:file_picker/file_picker.dart';
 
 class AddAchievementScreen extends StatefulWidget {
+  const AddAchievementScreen({super.key});
+
   @override
   _AddAchievementScreenState createState() => _AddAchievementScreenState();
 }
@@ -63,6 +65,13 @@ class _AddAchievementScreenState extends State<AddAchievementScreen> {
     );
   }
 
+  @override
+  void initState() {
+  super.initState();
+  Future.delayed(Duration.zero, () {
+    FocusScope.of(context).requestFocus(FocusNode());
+  });
+}
   @override
   Widget build(BuildContext context) {
     return Scaffold(

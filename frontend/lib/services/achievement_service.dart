@@ -3,7 +3,7 @@ import 'package:http/http.dart' as http;
 import '../models/achievement.dart';
 
 class AchievementService {
-  static const String baseUrl = 'http://localhost:8080';
+  static const String baseUrl = 'http://192.168.1.25:8080';
 
   Future<List<Achievement>> getAllAchievements() async {
     final response = await http.get(Uri.parse('$baseUrl/achievements'));
