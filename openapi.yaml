@@ -1,0 +1,134 @@
+openapi: 3.0.3
+info:
+  title: Professional Portfolio Tracker API
+  version: 1.0.0
+  description: API for tracking professional achievements and trophies.
+servers:
+  - url: http://localhost:8080
+paths:
+  /achievements:
+    get:
+      summary: Get list of achievements
+      tags:
+        - achievements
+      responses:
+        '200':
+          description: List of achievements
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Achievement'
+    post:
+      summary: Create new achievement
+      tags:
+        - achievements
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AchievementInput'
+      responses:
+        '201':
+          description: Achievement created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Achievement'
+        '400':
+          description: Invalid request body
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  /trophies:
+    get:
+      summary: Get list of trophies
+      tags:
+        - trophies
+      responses:
+        '200':
+          description: List of trophies
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Trophy'
+    post:
+      summary: Create new trophy
+      tags:
+        - trophies
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TrophyInput'
+      responses:
+        '201':
+          description: Trophy created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Trophy'
+        '400':
+          description: Invalid request body
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+components:
+  schemas:
+    Achievement:
+      type: object
+      properties:
+        id:
+          type: integer
+          example: 1
+        description:
+          type: string
+          example: Built a scalable REST API
+        impact:
+          type: string
+          example: Improved system reliability
+        skill_used:
+          type: string
+          example: Go
+    AchievementInput:
+      type: object
+      required:
+        - description
+        - impact
+        - skill_used
+      properties:
+        description:
+          type: string
+        impact:
+          type: string
+        skill_used:
+          type: string
+    Trophy:
+      type: object
+      properties:
+        id:
+          type: integer
+          example: 1
+        name:
+          type: string
+          example: API Master
+    TrophyInput:
+      type: object
+      required:
+        - name
+      properties:
+        name:
+          type: string
+    Error:
+      type: object
+      properties:
+        error:
+          type: string
+          example: Invalid request body 
