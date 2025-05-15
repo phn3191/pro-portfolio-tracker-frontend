@@ -1,0 +1,37 @@
+{
+  "version": "2.0.0",
+  "tasks": [
+    {
+      "label": "Launch PostgreSQL",
+      "type": "shell",
+      "command": "docker-compose up -d postgres",
+      "problemMatcher": [],
+      "presentation": {
+        "reveal": "silent",
+        "revealProblems": "onProblem",
+        "close": true
+      },
+      "group": {
+        "kind": "build",
+        "isDefault": false
+      },
+      "detail": "Start PostgreSQL database using docker-compose"
+    },
+    {
+      "label": "Stop PostgreSQL",
+      "type": "shell",
+      "command": "docker-compose down",
+      "problemMatcher": [],
+      "presentation": {
+        "reveal": "silent",
+        "revealProblems": "onProblem",
+        "close": true
+      },
+      "group": {
+        "kind": "build",
+        "isDefault": false
+      },
+      "detail": "Stop PostgreSQL database and remove containers"
+    }
+  ]
+}
