@@ -1,0 +1,27 @@
+name: pro_portfolio_tracker_frontend
+description: A Flutter app for tracking achievements.
+
+publish_to: 'none'
+
+version: 1.0.0+1
+
+environment:
+  sdk: ">=2.19.0 <4.0.0"
+
+dependencies:
+  flutter:
+    sdk: flutter
+  http: ^0.13.6
+  provider: ^6.1.1
+  intl: ^0.18.1
+  file_picker: ^6.1.1
+
+
+  # Add more dependencies as needed
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+
+flutter:
+  uses-material-design: true
