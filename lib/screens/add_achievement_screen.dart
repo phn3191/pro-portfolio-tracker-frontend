@@ -1,6 +1,9 @@
+
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:file_picker/file_picker.dart';
+import '../models/achievement.dart';
+import '../services/achievement_service.dart';
 
 class AddAchievementScreen extends StatefulWidget {
   const AddAchievementScreen({super.key});
@@ -39,8 +42,8 @@ class _AddAchievementScreenState extends State<AddAchievementScreen> {
         mainAxisSize: MainAxisSize.min,
         children: [
           ListTile(
-            leading: Icon(Icons.image),
-            title: Text('Pick image'),
+            leading: const Icon(Icons.image),
+            title: const Text('Pick image'),
             onTap: () async {
               final result = await FilePicker.platform.pickFiles(type: FileType.image);
               if (result != null) {
@@ -50,8 +53,8 @@ class _AddAchievementScreenState extends State<AddAchievementScreen> {
             },
           ),
           ListTile(
-            leading: Icon(Icons.insert_drive_file),
-            title: Text('Pick file'),
+            leading: const Icon(Icons.insert_drive_file),
+            title: const Text('Pick file'),
             onTap: () async {
               final result = await FilePicker.platform.pickFiles();
               if (result != null) {
@@ -65,18 +68,42 @@ class _AddAchievementScreenState extends State<AddAchievementScreen> {
     );
   }
 
+  void _saveAchievement() async {
+    final achievement = Achievement(
+      day: DateFormat('yyyy-MM-dd').format(_selectedDate),
+      description: _descriptionController.text.trim(),
+      impact: _impactController.text.trim(),
+      skill: _skillTags.join(', '),
+    );
+
+    try {
+      await AchievementService().addAchievement(achievement);
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Achievement saved successfully!')),
+      );
+      Navigator.pop(context);
+    } catch (e) {
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Failed to save: $e')),
+      );
+    }
+  }
+
   @override
   void initState() {
-  super.initState();
-  Future.delayed(Duration.zero, () {
-    FocusScope.of(context).requestFocus(FocusNode());
-  });
-}
+    super.initState();
+    Future.delayed(Duration.zero, () {
+      FocusScope.of(context).requestFocus(FocusNode());
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: null, // Không có tiêu đề
+        title: null,
         automaticallyImplyLeading: true,
         elevation: 0,
       ),
@@ -84,30 +111,25 @@ class _AddAchievementScreenState extends State<AddAchievementScreen> {
         padding: const EdgeInsets.all(16.0),
         child: ListView(
           children: [
-            // Description
             TextField(
               controller: _descriptionController,
-              decoration: InputDecoration(
+              decoration: const InputDecoration(
                 labelText: 'Description',
                 prefixIcon: Icon(Icons.description),
               ),
             ),
-
-            // Impact
-            SizedBox(height: 12),
+            const SizedBox(height: 12),
             TextField(
               controller: _impactController,
-              decoration: InputDecoration(
+              decoration: const InputDecoration(
                 labelText: 'Impact',
                 prefixIcon: Icon(Icons.flash_on),
               ),
             ),
-
-            // Skill Tags
-            SizedBox(height: 12),
+            const SizedBox(height: 12),
             TextField(
               controller: _skillController,
-              decoration: InputDecoration(
+              decoration: const InputDecoration(
                 labelText: 'Skill Used',
                 prefixIcon: Icon(Icons.code),
               ),
@@ -132,9 +154,7 @@ class _AddAchievementScreenState extends State<AddAchievementScreen> {
                       ))
                   .toList(),
             ),
-
-            // Date Picker
-            SizedBox(height: 20),
+            const SizedBox(height: 20),
             Row(
               children: [
                 Expanded(
@@ -143,14 +163,12 @@ class _AddAchievementScreenState extends State<AddAchievementScreen> {
                   ),
                 ),
                 IconButton(
-                  icon: Icon(Icons.calendar_today),
+                  icon: const Icon(Icons.calendar_today),
                   onPressed: _pickDate,
                 ),
               ],
             ),
-
-            // File Attachment
-            SizedBox(height: 20),
+            const SizedBox(height: 20),
             Row(
               children: [
                 Expanded(
@@ -159,22 +177,18 @@ class _AddAchievementScreenState extends State<AddAchievementScreen> {
                   ),
                 ),
                 IconButton(
-                  icon: Icon(Icons.attach_file),
+                  icon: const Icon(Icons.attach_file),
                   onPressed: _pickAttachment,
                 ),
               ],
             ),
-
-            // Save Button
-            SizedBox(height: 30),
+            const SizedBox(height: 30),
             ElevatedButton.icon(
-              onPressed: () {
-                // Save logic
-              },
-              icon: Icon(Icons.save),
-              label: Text('Save Achievement'),
+              onPressed: _saveAchievement,
+              icon: const Icon(Icons.save),
+              label: const Text('Save Achievement'),
               style: ElevatedButton.styleFrom(
-                minimumSize: Size(double.infinity, 50),
+                minimumSize: const Size(double.infinity, 50),
               ),
             )
           ],

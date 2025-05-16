@@ -1,7 +1,9 @@
+
 import 'package:flutter/material.dart';
 import 'screens/achievements_screen.dart';
 import 'screens/trophies_screen.dart';
 import 'screens/more_screen.dart';
+import 'screens/add_achievement_screen.dart'; // ✅ Import thêm màn hình add
 
 void main() {
   runApp(const MyApp());
@@ -19,6 +21,9 @@ class MyApp extends StatelessWidget {
         useMaterial3: true,
       ),
       home: const MainNavigation(),
+      routes: {
+        '/add-achievement': (context) => const AddAchievementScreen(), // ✅ Route mới
+      },
     );
   }
 }
