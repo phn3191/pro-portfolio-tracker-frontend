@@ -36,7 +36,9 @@ class _AddTrophiesScreenState extends State<AddTrophiesScreen> {
     );
     if (picked != null) {
       setState(() {
-        _dateController.text = "${picked.year}-${picked.month}-${picked.day}";
+        // ✅ Format ngày: yyyy-MM-dd
+        _dateController.text =
+            "${picked.year}-${picked.month.toString().padLeft(2, '0')}-${picked.day.toString().padLeft(2, '0')}";
       });
     }
   }
@@ -65,7 +67,7 @@ class _AddTrophiesScreenState extends State<AddTrophiesScreen> {
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(content: Text('Trophy added successfully')),
         );
-        Navigator.pop(context);
+        Navigator.pop(context, true); // ✅ thông báo đã thêm thành công
       } catch (e) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(content: Text('Error: ${e.toString()}')),

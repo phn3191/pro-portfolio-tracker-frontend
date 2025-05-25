@@ -3,7 +3,7 @@ import 'dart:io';
 import 'package:http/http.dart' as http;
 
 class TrophyService {
-  static const String baseUrl = 'https://pro-portfolio-tracker.fly.dev'; // 🔁 Replace with your real API
+  static const String baseUrl = 'https://pro-portfolio-tracker.fly.dev';
 
   /// Upload trophy with optional file attachment
   Future<void> addTrophy({
@@ -17,7 +17,7 @@ class TrophyService {
 
     request.fields['title'] = title;
     request.fields['description'] = description;
-    request.fields['date'] = awardedDate;
+    request.fields['awardedDate'] = awardedDate; // ✅ Sửa ở đây
 
     if (file != null) {
       request.files.add(await http.MultipartFile.fromPath('file', file.path));

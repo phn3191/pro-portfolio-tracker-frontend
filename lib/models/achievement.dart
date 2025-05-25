@@ -1,31 +1,31 @@
 class Achievement {
-  final String day;
+  final DateTime achievementDate;
   final String description;
   final String impact;
-  final String skill;
+  final List<String> skills; // tốt nhất nên là danh sách
 
   Achievement({
-    required this.day,
+    required this.achievementDate,
     required this.description,
     required this.impact,
-    required this.skill,
+    required this.skills,
   });
 
   factory Achievement.fromJson(Map<String, dynamic> json) {
     return Achievement(
-      day: json['day'] ?? '',
+      achievementDate: DateTime.parse(json['achievement_date']),
       description: json['description'] ?? '',
       impact: json['impact'] ?? '',
-      skill: json['skill'] ?? '',
+      skills: List<String>.from(json['skills'] ?? []),
     );
   }
 
   Map<String, dynamic> toJson() {
     return {
-      'day': day,
+      'achievement_date': achievementDate.toIso8601String().split('T').first,
       'description': description,
       'impact': impact,
-      'skill': skill,
+      'skills': skills,
     };
   }
 }

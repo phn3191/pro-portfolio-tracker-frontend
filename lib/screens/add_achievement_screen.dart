@@ -1,4 +1,3 @@
-
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:file_picker/file_picker.dart';
@@ -70,10 +69,10 @@ class _AddAchievementScreenState extends State<AddAchievementScreen> {
 
   void _saveAchievement() async {
     final achievement = Achievement(
-      day: DateFormat('yyyy-MM-dd').format(_selectedDate),
+      achievementDate: _selectedDate,
       description: _descriptionController.text.trim(),
       impact: _impactController.text.trim(),
-      skill: _skillTags.join(', '),
+      skills: _skillTags,
     );
 
     try {

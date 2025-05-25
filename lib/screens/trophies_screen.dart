@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../services/trophy_service.dart';
+import 'add_trophies_screen.dart';
 
 class TrophiesScreen extends StatefulWidget {
   const TrophiesScreen({super.key});
@@ -14,6 +15,10 @@ class _TrophiesScreenState extends State<TrophiesScreen> {
   @override
   void initState() {
     super.initState();
+    _loadTrophies();
+  }
+
+  void _loadTrophies() {
     _trophiesFuture = TrophyService().getAllTrophies();
   }
 
@@ -45,6 +50,21 @@ class _TrophiesScreenState extends State<TrophiesScreen> {
             },
           );
         },
+      ),
+      floatingActionButton: FloatingActionButton(
+        onPressed: () async {
+          final result = await Navigator.push(
+            context,
+            MaterialPageRoute(builder: (context) => const AddTrophiesScreen()),
+          );
+          // Nếu thêm thành công thì reload lại danh sách
+          if (result == true) {
+            setState(() {
+              _loadTrophies();
+            });
+          }
+        },
+        child: const Icon(Icons.add)
       ),
     );
   }

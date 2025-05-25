@@ -1,4 +1,3 @@
-
 import 'package:flutter/material.dart';
 import '../services/achievement_service.dart';
 import '../models/achievement.dart';
@@ -52,8 +51,8 @@ class _AchievementsScreenState extends State<AchievementsScreen> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text("Impact: ${a.impact}"),
-                      Text("Skills: ${a.skill}"),
-                      Text("Date: ${a.day}"),
+                      Text("Skills: ${a.skills.join(', ')}"),
+                      Text("Date: ${a.achievementDate.toIso8601String().split('T').first}"),
                     ],
                   ),
                 ),
