@@ -1,6 +1,5 @@
-import 'dart:io';
 import 'package:flutter/material.dart';
-import 'package:file_picker/file_picker.dart';
+import '../models/trophy.dart';
 import '../services/trophy_service.dart';
 
 class AddTrophiesScreen extends StatefulWidget {
@@ -12,16 +11,11 @@ class AddTrophiesScreen extends StatefulWidget {
 
 class _AddTrophiesScreenState extends State<AddTrophiesScreen> {
   final _formKey = GlobalKey<FormState>();
-  final _titleController = TextEditingController();
   final _dateController = TextEditingController();
   final _descriptionController = TextEditingController();
 
-  String? _fileName;
-  File? _pickedFile;
-
   @override
   void dispose() {
-    _titleController.dispose();
     _dateController.dispose();
     _descriptionController.dispose();
     super.dispose();
@@ -36,20 +30,8 @@ class _AddTrophiesScreenState extends State<AddTrophiesScreen> {
     );
     if (picked != null) {
       setState(() {
-        // ✅ Format ngày: yyyy-MM-dd
         _dateController.text =
             "${picked.year}-${picked.month.toString().padLeft(2, '0')}-${picked.day.toString().padLeft(2, '0')}";
-      });
-    }
-  }
-
-  Future<void> _pickFile() async {
-    final result = await FilePicker.platform.pickFiles();
-
-    if (result != null && result.files.single.path != null) {
-      setState(() {
-        _fileName = result.files.single.name;
-        _pickedFile = File(result.files.single.path!);
       });
     }
   }
@@ -57,17 +39,17 @@ class _AddTrophiesScreenState extends State<AddTrophiesScreen> {
   void _submitForm() async {
     if (_formKey.currentState!.validate()) {
       try {
-        await TrophyService().addTrophy(
-          title: _titleController.text,
-          description: _descriptionController.text,
-          awardedDate: _dateController.text,
-          file: _pickedFile,
+        final trophy = Trophy(
+          description: _descriptionController.text.trim(),
+          trophyDate: _dateController.text.trim(),
         );
+
+        await TrophyService().addTrophy(trophy);
 
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(content: Text('Trophy added successfully')),
         );
-        Navigator.pop(context, true); // ✅ thông báo đã thêm thành công
+        Navigator.pop(context, true);
       } catch (e) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(content: Text('Error: ${e.toString()}')),
@@ -88,45 +70,23 @@ class _AddTrophiesScreenState extends State<AddTrophiesScreen> {
             child: Column(
               children: [
                 TextFormField(
-                  controller: _titleController,
-                  decoration: const InputDecoration(labelText: 'Trophy Title'),
+                  controller: _descriptionController,
+                  decoration: const InputDecoration(labelText: 'Description'),
+                  maxLines: 3,
                   validator: (value) =>
-                      value == null || value.isEmpty ? 'Title is required' : null,
+                      value == null || value.isEmpty ? 'Description is required' : null,
                 ),
                 const SizedBox(height: 12),
                 TextFormField(
                   controller: _dateController,
                   decoration: const InputDecoration(
-                    labelText: 'Awarded Date',
+                    labelText: 'Trophy Date',
                     suffixIcon: Icon(Icons.calendar_today),
                   ),
                   readOnly: true,
                   onTap: _pickDate,
                   validator: (value) =>
                       value == null || value.isEmpty ? 'Date is required' : null,
-                ),
-                const SizedBox(height: 12),
-                TextFormField(
-                  controller: _descriptionController,
-                  decoration: const InputDecoration(labelText: 'Description'),
-                  maxLines: 3,
-                ),
-                const SizedBox(height: 16),
-                Row(
-                  children: [
-                    ElevatedButton.icon(
-                      onPressed: _pickFile,
-                      icon: const Icon(Icons.attach_file),
-                      label: const Text('Attach File'),
-                    ),
-                    const SizedBox(width: 12),
-                    Expanded(
-                      child: Text(
-                        _fileName ?? 'No file selected',
-                        overflow: TextOverflow.ellipsis,
-                      ),
-                    ),
-                  ],
                 ),
                 const SizedBox(height: 24),
                 ElevatedButton(

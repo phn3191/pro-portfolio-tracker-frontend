@@ -15,7 +15,7 @@ class _AchievementsScreenState extends State<AchievementsScreen> {
   @override
   void initState() {
     super.initState();
-    _futureAchievements = AchievementService().getAllAchievements();
+    _futureAchievements = AchievementService().getAchievements();
   }
 
   @override
@@ -51,8 +51,8 @@ class _AchievementsScreenState extends State<AchievementsScreen> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text("Impact: ${a.impact}"),
-                      Text("Skills: ${a.skills.join(', ')}"),
-                      Text("Date: ${a.achievementDate.toIso8601String().split('T').first}"),
+                      Text("Skill Used: ${a.skillUsed}"),
+                      Text("Date: ${a.achievementDate}"),
                     ],
                   ),
                 ),

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../services/trophy_service.dart';
+import '../models/trophy.dart';
 import 'add_trophies_screen.dart';
 
 class TrophiesScreen extends StatefulWidget {
@@ -10,7 +11,7 @@ class TrophiesScreen extends StatefulWidget {
 }
 
 class _TrophiesScreenState extends State<TrophiesScreen> {
-  late Future<List<Map<String, dynamic>>> _trophiesFuture;
+  late Future<List<Trophy>> _trophiesFuture;
 
   @override
   void initState() {
@@ -19,14 +20,14 @@ class _TrophiesScreenState extends State<TrophiesScreen> {
   }
 
   void _loadTrophies() {
-    _trophiesFuture = TrophyService().getAllTrophies();
+    _trophiesFuture = TrophyService().getTrophies();
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(title: const Text('Trophies')),
-      body: FutureBuilder<List<Map<String, dynamic>>>(
+      body: FutureBuilder<List<Trophy>>(
         future: _trophiesFuture,
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
@@ -43,9 +44,8 @@ class _TrophiesScreenState extends State<TrophiesScreen> {
             itemBuilder: (context, index) {
               final t = trophies[index];
               return ListTile(
-                title: Text(t['title'] ?? ''),
-                subtitle: Text(t['description'] ?? ''),
-                trailing: Text(t['date'] ?? ''),
+                title: Text(t.description),
+                subtitle: Text('Date: ${t.trophyDate}'),
               );
             },
           );
@@ -57,14 +57,11 @@ class _TrophiesScreenState extends State<TrophiesScreen> {
             context,
             MaterialPageRoute(builder: (context) => const AddTrophiesScreen()),
           );
-          // Nếu thêm thành công thì reload lại danh sách
           if (result == true) {
-            setState(() {
-              _loadTrophies();
-            });
+            setState(() => _loadTrophies());
           }
         },
-        child: const Icon(Icons.add)
+        child: const Icon(Icons.add),
       ),
     );
   }
